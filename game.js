@@ -5,8 +5,9 @@ let world = {
     cursors: null,
     jumpButton: null,
     map: null,
+    player: null,
     mainTileset: null,
-    mainLayer: null
+    groundLayer: null
 };
 
 let config = {
@@ -17,22 +18,23 @@ let config = {
     physics: {
         default: "arcade",
         arcade: {
-            gravity: {y:0, x:0},
-            debug: true
+            tileBias: 32,
+            gravity:{y:6000, x:0},
+            debug: false
         }
     },
     scene:{
         preload: preload,
         create: create,
-        update: update
+        update: update  
     }
 };
 
 
 
-const jumpSpeed = 2000; 
-const moveSpeed = 500;
-const totalWidth = world.width * 10;
+const jumpSpeed = 1000; 
+const moveSpeed = 250;
+const totalWidth = config.width * 10;
 
 
 var jumpCount = 0;
@@ -41,40 +43,40 @@ function preload (){
     this.load.image("sky", "./assets/Images/sky.png");  
     this.load.image("mountains","./assets/Images/mountains.png");
     this.load.image("fields","./assets/Images/fields.png");
-    this.load.image("floor","./assets/Images/floor.png");
+    this.load.image("floor","./assets/Images/Pillars.png");
     this.load.image("mainTiles","./assets/Tilesets/MainTileSheet.png");
 
-    this.load.tilemapTiledJSON("map", "./assets/Tilemaps/map3.json");
+    this.load.tilemapTiledJSON("map", "./assets/Tilemaps/map.json");
 
-    this.load.spritesheet("player","./assets/Sprites/MainCharacterIDLE-sheet.png", {
+    this.load.spritesheet("player","./assets/Sprites/FlameCharacter-Spritesheet.png", {
         frameWidth: 32,
-        frameHeight: 32 
+        frameHeight: 64 
     });
 }
 
 function create (){
-    buildWorld(this, world);
-    world.mainLayer.setCollisionByProperty({collides:true});
-    this.cameras.main.setBounds(0,0,totalWidth, world.height);
     
-    this.physics.world.setBounds(0,0,totalWidth,world.height);
+    this.cameras.main.setBounds(0,0,totalWidth, config.height);
+    
+    this.physics.world.setBounds(0,0,totalWidth,config.height);
 
-    this.add.image(world.width/2, world.height/2, "sky")
+    this.add.image(config.width/2, config.height/2, "sky")
         .setScrollFactor(0);
 
     allignBackground(this, "mountains", 0.25);
     allignBackground(this, "fields", 0.5);
     allignBackground(this, "floor", 1);
-
+    buildWorld(this,world);
+    
     world.jumpButton = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
     world.cursors = this.input.keyboard.createCursorKeys();
     
-    world.player = new Player(this,world.width/4,world.height/2,"player");
+    world.player = new Player(this,config.width/4,config.height/2,"player");
     
     this.cameras.main.startFollow(world.player);
 
-    this.physics.add.collider(world.player, world.mainLayer);
+    this.physics.add.collider(world.player, world.groundLayer);
     
 }
 
@@ -89,7 +91,7 @@ function allignBackground(scene, texture, scrollFactor){
 
     let x = 0;
     for(let i=0; i < count; i++){
-        scene.add.image(x, world.height, texture)
+        scene.add.image(x, config.height, texture)
         .setOrigin(0, 1)
         .setScrollFactor(scrollFactor);
 
@@ -100,10 +102,11 @@ function allignBackground(scene, texture, scrollFactor){
 function buildWorld(scene, world) {
     world.map = scene.make.tilemap({key:"map"});
     
-    world.mainTileset = world.map.addTilesetImage("MainTileSheet", "mainTiles");
+    world.mainTileset = world.map.addTilesetImage("MainTileSet", "mainTiles");
 
-    world.mainLayer = world.map.createStaticLayer("main",world.mainTileset,0,0);
+    world.groundLayer = world.map.createStaticLayer("groundLayer",world.mainTileset,0,0)
+
+    world.map.setCollisionBetween(1, 999, true, "groundLayer");
 } 
-
 
 let game = new Phaser.Game(config); 
