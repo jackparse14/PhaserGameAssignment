@@ -55,10 +55,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     handleMovement(){ 
         const touchingGround = this.body.onFloor() || this.body.touching.down;
-        if(world.cursors.right.isDown && touchingGround) {
+        if(world.cursors.right.isDown) {
             this.anims.play("moveRight", true);
             this.setVelocityX(moveSpeed);
-        } else if(world.cursors.left.isDown && touchingGround) {
+        } else if(world.cursors.left.isDown) {
             this.anims.play("moveLeft", true);
             this.setVelocityX(-moveSpeed);
         } else {

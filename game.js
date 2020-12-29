@@ -52,6 +52,16 @@ function preload (){
         frameWidth: 32,
         frameHeight: 64 
     });
+
+    this.load.spritesheet("fire","./assets/Sprites/Flame-Spritesheet.png",{
+        frameWidth: 32,
+        frameHeight: 32
+    });
+
+    this.load.spritesheet("water","./assets/Sprites/Water-Spritesheet.png",{
+        frameWidth: 32,
+        frameHeight: 32
+    });
 }
 
 function create (){
