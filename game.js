@@ -6,6 +6,8 @@ let world = {
     jumpButton: null,
     map: null,
     player: null,
+    water: null,
+    fireGroup: null,
     mainTileset: null,
     groundLayer: null
 };
@@ -65,7 +67,6 @@ function preload (){
 }
 
 function create (){
-    
     this.cameras.main.setBounds(0,0,totalWidth, config.height);
     
     this.physics.world.setBounds(0,0,totalWidth,config.height);
@@ -83,15 +84,20 @@ function create (){
     world.cursors = this.input.keyboard.createCursorKeys();
     
     world.player = new Player(this,config.width/4,config.height/2,"player");
+    //world.fireGroup = this.add.group();
     
+    
+
+    world.water =  new Water(this,config.width/1.5,config.height/4,"water");
     this.cameras.main.startFollow(world.player);
 
     this.physics.add.collider(world.player, world.groundLayer);
-    
+    this.physics.add.collider(world.water, world.groundLayer);
 }
 
 function update(time,delta){
     world.player.updatePlayer(); 
+    world.water.updateWater();
 }
 
 function allignBackground(scene, texture, scrollFactor){

@@ -3,16 +3,17 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, texture){
         super(scene, x, y, texture);
         scene.physics.add.existing(this);
+        
         scene.anims.create({
-            key: "idle",
+            key: "player-idle",
             frames: scene.anims.generateFrameNumbers(texture,{
                 start: 0,
-                end: 7,
+                end: 7,                         
             }),
             frameRate: 10,
-            repeat: -1
+            repeat: -1  
         });
-        this.anims.load("idle");
+        this.anims.load("player-idle");
 
         scene.anims.create({
             key: "moveRight",
@@ -35,7 +36,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             repeat: -1
         });
         this.anims.load("moveLeft");
-
+        
         scene.anims.create({
             key: "jump",
             frames: scene.anims.generateFrameNumbers(texture,{
@@ -46,6 +47,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             repeat: -1
         });
         this.anims.load("jump");
+        
+    
 
         this.setCollideWorldBounds(true);
         this.setBounce(0.2);
@@ -62,7 +65,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             this.anims.play("moveLeft", true);
             this.setVelocityX(-moveSpeed);
         } else {
-            this.anims.play("idle", true);
+            this.anims.play("player-idle", true);
             this.setVelocity(0) ;
         }
     }
