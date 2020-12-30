@@ -48,14 +48,17 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         });
         this.anims.load("jump");
         
-    
+        
 
         this.setCollideWorldBounds(true);
         this.setBounce(0.2);
 
+        
         scene.add.existing(this);
     }
 
+    
+    
     handleMovement(){ 
         const touchingGround = this.body.onFloor() || this.body.touching.down;
         if(world.cursors.right.isDown) {
@@ -83,5 +86,15 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         
         this.handleMovement();
         this.handleJump();
+    }
+     damagePlayer(player, water){
+        water.disableBody(true,true);
+        world.health -= 1;
+        if(world.health == 0){
+            player.disableBody(true,true);
+            //code gameover
+        } 
+        
+    
     }
 }

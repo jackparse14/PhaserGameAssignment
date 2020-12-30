@@ -6,6 +6,7 @@ let world = {
     jumpButton: null,
     map: null,
     player: null,
+    health: 3,
     water: null,
     fireGroup: null,
     mainTileset: null,
@@ -20,7 +21,7 @@ let config = {
     physics: {
         default: "arcade",
         arcade: {
-            tileBias: 32,
+            tileBias: 40,
             gravity:{y:6000, x:0},
             debug: false
         }
@@ -38,7 +39,8 @@ const jumpSpeed = 1000;
 const moveSpeed = 250;
 const totalWidth = config.width * 10;
 
-
+var timerEvent;
+var text;
 var jumpCount = 0;
 
 function preload (){
@@ -84,20 +86,25 @@ function create (){
     world.cursors = this.input.keyboard.createCursorKeys();
     
     world.player = new Player(this,config.width/4,config.height/2,"player");
-    //world.fireGroup = this.add.group();
+    //add water to a group to spawn lots
     
-    
-
     world.water =  new Water(this,config.width/1.5,config.height/4,"water");
+
+    text = this.add.text(32,32);    
+    timerEvent = this.time.delayedCall(6000, endGame, [], this)
+
     this.cameras.main.startFollow(world.player);
 
     this.physics.add.collider(world.player, world.groundLayer);
     this.physics.add.collider(world.water, world.groundLayer);
+    this.physics.add.overlap(world.player,world.water,world.player.damagePlayer, null, this)
+
 }
 
 function update(time,delta){
     world.player.updatePlayer(); 
     world.water.updateWater();
+    updateTimer();
 }
 
 function allignBackground(scene, texture, scrollFactor){
@@ -124,5 +131,15 @@ function buildWorld(scene, world) {
 
     world.map.setCollisionBetween(1, 999, true, "groundLayer");
 } 
+
+function updateTimer(){
+    var progress = timerEvent.getProgress().toString();
+    var antiprogress = 1 - progress;
+    text.setText(antiprogress*100);;
+}
+
+function endGame(){
+    console.log("poop");
+}
 
 let game = new Phaser.Game(config); 
