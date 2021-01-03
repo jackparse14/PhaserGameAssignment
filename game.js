@@ -49,6 +49,7 @@ function preload (){
     this.load.image("fields","./assets/Images/fields.png");
     this.load.image("floor","./assets/Images/Pillars.png");
     this.load.image("mainTiles","./assets/Tilesets/MainTileSheet.png");
+    this.load.image("start","./assets/Images/Start.png");
 
     this.load.tilemapTiledJSON("map", "./assets/Tilemaps/map.json");
 
@@ -80,6 +81,8 @@ function create (){
     allignBackground(this, "fields", 0.5);
     allignBackground(this, "floor", 1);
     buildWorld(this,world);
+
+    this.add.image(160,config.height/1.48,"start")
     
     world.jumpButton = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
