@@ -102,7 +102,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         } 
     }
 
-
-
-    
+    collectFire(player,fire){
+        fire.disableBody(true,true);
+        if (world.fireBullets < 3){
+            world.fireBullets += 1;
+        } else {
+            return;
+        }
+    }
 }

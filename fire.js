@@ -14,4 +14,9 @@ class Fire extends Phaser.Physics.Arcade.Sprite{
 
         scene.add.existing(this);
     }
+
+    updateFire(){
+        this.anims.play("fire-idle", true);
+        this.angle += 0.1;
+    }
 }

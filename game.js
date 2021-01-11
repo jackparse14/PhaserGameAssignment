@@ -8,6 +8,7 @@ let world = {
     player: null,
     finishLine: null,
     health: 3,
+    fireBullets: 1,
     waterGroup: null,
     fireGroup: null,
     mainTileset: null,
@@ -24,7 +25,7 @@ let config = {
         arcade: {
             tileBias: 40,
             gravity:{y:6000, x:0},
-            debug: true
+            debug: false
         }
     },
     scene:{
@@ -94,12 +95,17 @@ function create (){
     world.player = new Player(this,config.width/4,config.height/2,"player");
 
     world.waterGroup = this.add.group();
-    
+    world.fireGroup = this.add.group();
+
     //spawn water
     world.waterGroup.add(new Water(this,config.width/1.5,config.height/4, "water"));
     world.waterGroup.add(new Water(this,config.width/2,config.height/3, "water"));
-    world.waterGroup.add(new Water(this,config.width,config.height/2, "water"));
-    world.waterGroup.add(new Water(this,config.width/1.7,config.height/3,"water"));
+
+
+    //spawn fire
+    world.fireGroup.add(new Fire(this,config.width/1.5,config.height/1.4, "fire"));
+    world.fireGroup.add(new Fire(this,config.width/1.3,config.height/1.4, "fire"));
+
 
     text = this.add.text(totalWidth - config.width/2,config.height/2);    
     timerEvent = this.time.delayedCall(100000, world.player.loseGame, [], this)
@@ -109,18 +115,24 @@ function create (){
     this.physics.add.collider(world.player, world.groundLayer);
     this.physics.add.collider(world.waterGroup, world.groundLayer);
     this.physics.add.collider(world.finishLine, world.groundLayer); 
-    this.physics.add.overlap(world.player,world.waterGroup,world.player.damagePlayer)
+    this.physics.add.overlap(world.player,world.waterGroup,world.player.damagePlayer);
+    this.physics.add.overlap(world.player,world.fireGroup,world.player.collectFire);
     this.physics.add.overlap(world.player,world.finishLine,world.finishLine.winGame);
 }
 
 function update(){
     var water_ary;
+    var fire_ary;
     world.player.updatePlayer(); 
     water_ary = world.waterGroup.getChildren();
+    fire_ary = world.fireGroup.getChildren();
     for (let water_spr of water_ary){
         water_spr.updateWater();
     }
-    // update water
+    for (let fire_spr of fire_ary){
+        fire_spr.updateFire();
+    }
+
     updateTimer();
 }
 
@@ -153,9 +165,5 @@ function updateTimer(){
     var progress = timerEvent.getProgress().toString();
     var antiprogress = 1 - progress;    
     text.setText("You Win - Score: " + antiprogress*100);
-}
-
-function createWaters(scene,x,y,texture){
-    
 }
 let game = new Phaser.Game(config);     
