@@ -8,8 +8,6 @@ let world = {
     player: null,
     finishLine: null,
     health: 3,
-    water: null,
-    water2: null,
     waterGroup: null,
     fireGroup: null,
     mainTileset: null,
@@ -97,12 +95,11 @@ function create (){
 
     world.waterGroup = this.add.group();
     
-    createWater(this,config.width/1.5,config.height/4, "water");
-    createWater(this,config.width/2,config.height/3, "water");
-    createWater(this,config.width,config.height/2, "water");
-    createWater(this,config.width/1.7,config.height/3,"water");
-
-    
+    //spawn water
+    world.waterGroup.add(new Water(this,config.width/1.5,config.height/4, "water"));
+    world.waterGroup.add(new Water(this,config.width/2,config.height/3, "water"));
+    world.waterGroup.add(new Water(this,config.width,config.height/2, "water"));
+    world.waterGroup.add(new Water(this,config.width/1.7,config.height/3,"water"));
 
     text = this.add.text(totalWidth - config.width/2,config.height/2);    
     timerEvent = this.time.delayedCall(100000, world.player.loseGame, [], this)
@@ -116,9 +113,14 @@ function create (){
     this.physics.add.overlap(world.player,world.finishLine,world.finishLine.winGame);
 }
 
-function update(time,delta){
+function update(){
+    var water_ary;
     world.player.updatePlayer(); 
-    world.water.updateWater();
+    water_ary = world.waterGroup.getChildren();
+    for (let water_spr of water_ary){
+        water_spr.updateWater();
+    }
+    // update water
     updateTimer();
 }
 
@@ -153,8 +155,7 @@ function updateTimer(){
     text.setText("You Win - Score: " + antiprogress*100);
 }
 
-function createWater(scene,x,y,texture){
-    world.water = new Water(scene,x,y,texture);
-    world.waterGroup.create(x,y,world.water);
+function createWaters(scene,x,y,texture){
+    
 }
 let game = new Phaser.Game(config);     

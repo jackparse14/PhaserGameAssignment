@@ -28,16 +28,15 @@ class Water extends Phaser.Physics.Arcade.Sprite{
                 const x = this.x;
                 const y = this.y
                 if(x<world.player.x){
-                    this.x += 0.75;
+                    this.x += 0.5;
                 } else if (x>world.player.x){
-                    this.x -= 0.75;
+                    this.x -= 0.5;
                 }
                 if(y<world.player.y){
-                    this.y += 0.75;
+                    this.y += 0.5;
                 } else if (y>world.player.y){
-                    this.y -= 0.75;
+                    this.y -= 0.5;
                 }   
         };
     }
-    
 }
