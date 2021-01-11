@@ -1,6 +1,6 @@
 class Water extends Phaser.Physics.Arcade.Sprite{
     constructor(scene,x,y,texture){
-        super(scene, x, y, texture);
+        super(scene,x,y,texture);   
         scene.physics.add.existing(this);
         scene.anims.create({
             key: "water-idle",
@@ -22,21 +22,20 @@ class Water extends Phaser.Physics.Arcade.Sprite{
     }
 
     moveWater(){
-        this.angle += 5;
-        const waterJumpSpeed = 100;
+        this.angle += 10;
         var distanceToPlayer = Phaser.Math.Distance.Between(this.x,this.y,world.player.x,world.player.y);
         if(distanceToPlayer<300){
                 const x = this.x;
                 const y = this.y
                 if(x<world.player.x){
-                    this.x += 0.5;
+                    this.x += 0.75;
                 } else if (x>world.player.x){
-                    this.x -= 0.5;
+                    this.x -= 0.75;
                 }
                 if(y<world.player.y){
-                    this.y += 0.5;
+                    this.y += 0.75;
                 } else if (y>world.player.y){
-                    this.y -= 0.5;
+                    this.y -= 0.75;
                 }   
         };
     }

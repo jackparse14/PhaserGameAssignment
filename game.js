@@ -6,8 +6,11 @@ let world = {
     jumpButton: null,
     map: null,
     player: null,
+    finishLine: null,
     health: 3,
     water: null,
+    water2: null,
+    waterGroup: null,
     fireGroup: null,
     mainTileset: null,
     groundLayer: null
@@ -23,7 +26,7 @@ let config = {
         arcade: {
             tileBias: 40,
             gravity:{y:6000, x:0},
-            debug: false
+            debug: true
         }
     },
     scene:{
@@ -49,7 +52,8 @@ function preload (){
     this.load.image("fields","./assets/Images/fields.png");
     this.load.image("floor","./assets/Images/Pillars.png");
     this.load.image("mainTiles","./assets/Tilesets/MainTileSheet.png");
-    this.load.image("start","./assets/Images/Start.png");
+    this.load.image("start","./assets/Images/start.png");
+    this.load.image("finish","./assets/Images/Finish.png");
 
     this.load.tilemapTiledJSON("map", "./assets/Tilemaps/map.json");
 
@@ -82,26 +86,34 @@ function create (){
     allignBackground(this, "floor", 1);
     buildWorld(this,world);
 
-    this.add.image(160,config.height/1.48,"start")
+    this.add.image(160,config.height/1.48,"start");
+    world.finishLine = new Finish(this,totalWidth-120,config.height/5.5,"finish");
     
     world.jumpButton = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
     world.cursors = this.input.keyboard.createCursorKeys();
     
     world.player = new Player(this,config.width/4,config.height/2,"player");
-    //add water to a group to spawn lots
-    
-    world.water =  new Water(this,config.width/1.5,config.height/4,"water");
 
-    text = this.add.text(32,32);    
-    timerEvent = this.time.delayedCall(6000, endGame, [], this)
+    world.waterGroup = this.add.group();
+    
+    createWater(this,config.width/1.5,config.height/4, "water");
+    createWater(this,config.width/2,config.height/3, "water");
+    createWater(this,config.width,config.height/2, "water");
+    createWater(this,config.width/1.7,config.height/3,"water");
+
+    
+
+    text = this.add.text(totalWidth - config.width/2,config.height/2);    
+    timerEvent = this.time.delayedCall(100000, world.player.loseGame, [], this)
 
     this.cameras.main.startFollow(world.player);
 
     this.physics.add.collider(world.player, world.groundLayer);
-    this.physics.add.collider(world.water, world.groundLayer);
-    this.physics.add.overlap(world.player,world.water,world.player.damagePlayer, null, this)
-
+    this.physics.add.collider(world.waterGroup, world.groundLayer);
+    this.physics.add.collider(world.finishLine, world.groundLayer); 
+    this.physics.add.overlap(world.player,world.waterGroup,world.player.damagePlayer)
+    this.physics.add.overlap(world.player,world.finishLine,world.finishLine.winGame);
 }
 
 function update(time,delta){
@@ -124,7 +136,7 @@ function allignBackground(scene, texture, scrollFactor){
         x += imgWidth;
     }
 }
-
+    
 function buildWorld(scene, world) {
     world.map = scene.make.tilemap({key:"map"});
     
@@ -137,12 +149,12 @@ function buildWorld(scene, world) {
 
 function updateTimer(){
     var progress = timerEvent.getProgress().toString();
-    var antiprogress = 1 - progress;
-    text.setText(antiprogress*100);;
+    var antiprogress = 1 - progress;    
+    text.setText("You Win - Score: " + antiprogress*100);
 }
 
-function endGame(){
-    console.log("poop");
+function createWater(scene,x,y,texture){
+    world.water = new Water(scene,x,y,texture);
+    world.waterGroup.create(x,y,world.water);
 }
-
-let game = new Phaser.Game(config); 
+let game = new Phaser.Game(config);     

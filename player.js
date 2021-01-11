@@ -82,19 +82,27 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         }
         if(touchingGround){jumpCount = 0};
     }
+
     updatePlayer(){
         
         this.handleMovement();
         this.handleJump();
     }
-     damagePlayer(player, water){
+
+    loseGame(){
+        console.log("Game Lost");
+        game.scene.pause("default");
+    }
+
+    damagePlayer(player, water){
         water.disableBody(true,true);
         world.health -= 1;
         if(world.health == 0){
-            player.disableBody(true,true);
-            //code gameover
+            player.loseGame();
         } 
-        
-    
     }
+
+
+
+    
 }
