@@ -53,7 +53,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.setCollideWorldBounds(true);
         this.setBounce(0.2);
 
-        
+        this.nextProjectileTime = 0;
+        this.shootDelay = 200;
         scene.add.existing(this);
     }
 
@@ -87,6 +88,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         
         this.handleMovement();
         this.handleJump();
+
+        if(world.shootButton.isDown){
+            this.shootProjectile(world.projectileGroup);
+        };
     }
 
     loseGame(){
@@ -102,12 +107,20 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         } 
     }
 
-    collectFire(player,fire){
+    collectFire(fire){
         fire.disableBody(true,true);
-        if (world.fireBullets < 3){
-            world.fireBullets += 1;
-        } else {
-            return;
-        }
+        if (world.currentProjectiles < 3){
+            world.currentProjectiles += 1;
+        } 
+    }
+    
+    shootProjectile(projectileGroup){
+        if(world.currentProjectiles>0){
+            if(this.scene.time.now > this.nextProjectileTime){
+                projectileGroup.add(new Projectile(game.scene,this.x,this.y,"fire"));
+                world.currentProjectiles -= 1;
+                this.nextProjectileTime = game.scene.time.now + this.shootDelay;
+            }
+        } 
     }
 }

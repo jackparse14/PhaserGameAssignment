@@ -1,6 +1,7 @@
 class Fire extends Phaser.Physics.Arcade.Sprite{
     constructor(scene,x,y,texture){
-        super(scene, x, y, texture);    
+        super(scene, x, y, texture);  
+        scene.physics.add.existing(this);
         scene.anims.create({
             key: "fire-idle",
             frames: scene.anims.generateFrameNumbers(texture,{

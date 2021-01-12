@@ -4,11 +4,13 @@ let world = {
     TILEWIDTH: 32,
     cursors: null,
     jumpButton: null,
+    shootButton: null,
     map: null,
     player: null,
     finishLine: null,
     health: 3,
-    fireBullets: 1,
+    currentProjectiles: 1,
+    projectileGroup: null,
     waterGroup: null,
     fireGroup: null,
     mainTileset: null,
@@ -89,13 +91,14 @@ function create (){
     world.finishLine = new Finish(this,totalWidth-120,config.height/5.5,"finish");
     
     world.jumpButton = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-
+    world.shootButton = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
     world.cursors = this.input.keyboard.createCursorKeys();
     
     world.player = new Player(this,config.width/4,config.height/2,"player");
 
     world.waterGroup = this.add.group();
     world.fireGroup = this.add.group();
+    world.projectileGroup = this.add.group();
 
     //spawn water
     world.waterGroup.add(new Water(this,config.width/1.5,config.height/4, "water"));
@@ -115,9 +118,11 @@ function create (){
     this.physics.add.collider(world.player, world.groundLayer);
     this.physics.add.collider(world.waterGroup, world.groundLayer);
     this.physics.add.collider(world.finishLine, world.groundLayer); 
-    this.physics.add.overlap(world.player,world.waterGroup,world.player.damagePlayer);
-    this.physics.add.overlap(world.player,world.fireGroup,world.player.collectFire);
-    this.physics.add.overlap(world.player,world.finishLine,world.finishLine.winGame);
+    this.physics.add.collider(world.fireGroup, world.groundLayer);
+
+    this.physics.add.overlap(world.player, world.waterGroup, world.player.damagePlayer);
+    this.physics.add.overlap(world.fireGroup, world.player , world.player.collectFire);
+    this.physics.add.overlap(world.player, world.finishLine, world.finishLine.winGame);
 }
 
 function update(){
