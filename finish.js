@@ -6,8 +6,8 @@ class Finish extends Phaser.Physics.Arcade.Sprite{
     }
     
     winGame(){
-        //make the win text visible
-        text.setAlpha(1);
+        //Display Win text
+        winText.setText("YOU WIN! - Score: " + (world.timeScore + world.killScore)).setAlpha(1);
         //pause the game
         game.scene.pause("default");
     }

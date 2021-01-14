@@ -6,6 +6,8 @@ let world = {
     mainTileset: null,
     groundLayer: null,
     map: null,
+    timeScore: 0,
+    killScore:0,
     //controls
     cursors: null,
     jumpButton: null,
@@ -23,7 +25,8 @@ let world = {
     //sound
     backgroundMusic: null,
     shootSFX: null,
-    pickupSFX: null
+    pickupSFX: null,
+    takeDamageSFX: null
 };
 
 let config = {
@@ -36,7 +39,7 @@ let config = {
         arcade: {
             tileBias: 40,
             gravity:{y:6000, x:0},
-            debug: false
+            debug: true
         }
     },
     scene:{
@@ -53,8 +56,11 @@ const moveSpeed = 250;
 const totalWidth = config.width * 10;
 
 var timerEvent;
-var text;
+var winText;
+var loseText;
 var jumpCount = 0;
+
+
 
 function preload (){
     this.load.image("sky", "./assets/Images/sky.png");  
@@ -82,9 +88,11 @@ function preload (){
         frameHeight: 32
     });
 
+    //load audio
     this.load.audio("backgroundMusic",["./assets/Audio/mainBackgroundAudio.mp3"]);
-    this.load.audio("shootSFX",["./assets/Audio/laser7.mp3"]);
-    this.load.audio("pickupSFX",["./assets/Audio/fireIgnite.mp3"]);
+    this.load.audio("shootSFX",["./assets/Audio/shoot.mp3"]);
+    this.load.audio("takeDamageSFX",["./assets/Audio/takeDamage.mp3"]);
+    this.load.audio("pickupSFX",["./assets/Audio/pickup.mp3"]);
 }
 
 function create (){
@@ -119,13 +127,17 @@ function create (){
     world.projectileGroup = this.add.group();
 
     //spawn water
-    world.waterGroup.add(new Water(this,config.width/1.5,config.height/4, "water"));
-    world.waterGroup.add(new Water(this,config.width/2,config.height/3, "water"));
-
+    for(var i=0;i<20;i++){
+        let water = new Water(this,Phaser.Math.Between(config.width/2,totalWidth),Phaser.Math.Between(0,config.height), "water")
+        world.waterGroup.add(water);
+    }
 
     //spawn fire
-    world.fireGroup.add(new Fire(this,config.width/1.5,config.height/1.4, "fire"));
-    world.fireGroup.add(new Fire(this,config.width/1.3,config.height/1.4, "fire"));
+    for(var i=0;i<20;i++){
+        let fire = new Fire(this,Phaser.Math.Between(config.width/2,totalWidth),Phaser.Math.Between(0,config.height), "fire")
+        world.fireGroup.add(fire);
+    }
+    
 
     //add sound
     world.backgroundMusic = this.sound.add("backgroundMusic");
@@ -135,14 +147,17 @@ function create (){
         rate: 1,
         loop: true
     }
+    world.backgroundMusic.play(backgroundMusicConfig);
     world.shootSFX = this.sound.add("shootSFX");
     world.pickupSFX = this.sound.add("pickupSFX");
-    world.backgroundMusic.play(backgroundMusicConfig);
+    world.takeDamageSFX = this.sound.add("takeDamageSFX");
+    
 
-
-    text = this.add.text(totalWidth - config.width/2,config.height/2).setAlpha(0);   
-     
-    timerEvent = this.time.delayedCall(1000, world.player.loseGame, [], this)
+    //add text
+    loseText = this.add.text();
+    winText = this.add.text(totalWidth - config.width/2,config.height/2).setAlpha(0);   
+     //timer 100 secs
+    timerEvent = this.time.delayedCall(100000, world.player.loseGame, [], this)
 
     this.cameras.main.startFollow(world.player);
 
@@ -150,12 +165,13 @@ function create (){
     this.physics.add.collider(world.waterGroup, world.groundLayer);
     this.physics.add.collider(world.finishLine, world.groundLayer); 
     this.physics.add.collider(world.fireGroup, world.groundLayer);
+    this.physics.add.collider(world.projectileGroup,world.groundLayer);
 
     this.physics.add.overlap(world.player, world.waterGroup, world.player.damagePlayer);
     this.physics.add.overlap(world.fireGroup, world.player , world.player.collectFire);
     this.physics.add.overlap(world.player, world.finishLine, world.finishLine.winGame);
-    this.physics.add.overlap(world.projectileGroup, world.waterGroup, destroyGameObject);
-    this.physics.add.overlap(world.projectileGroup, world.groundLayer, destroyGameObject);
+    this.physics.add.collider(world.projectileGroup, world.waterGroup, collideProjectileWater);
+    this.physics.add.collider(world.projectileGroup, world.groundLayer, collideProjectileGround);
 }
 
 function update(){
@@ -208,17 +224,16 @@ function buildWorld(scene, world) {
 } 
 
 function updateTimer(){
-    var progress = timerEvent.getProgress().toString();
-    var antiprogress = 1 - progress;
-    var score = Phaser.Math.FloorTo(antiprogress * 100);
-    text.setText("YOU WIN! - Score: " + score);
+    var antiprogress = 1 - timerEvent.getProgress().toString();
+    world.timeScore = Phaser.Math.FloorTo(antiprogress * 10000);
 }
 
-function calcScore(){
-
-}
-
-function destroyGameObject(){
+function collideProjectileGround(projectile,groundLayer){
     projectile.destroy();
+}
+function collideProjectileWater(projectile,water){
+    water.destroy();
+    projectile.destroy();
+    world.killScore += 1000;
 }
 let game = new Phaser.Game(config);     

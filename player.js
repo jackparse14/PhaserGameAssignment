@@ -63,7 +63,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
         this.setCollideWorldBounds(true);
         this.setBounce(0.2);
-
         this.nextProjectileTime = 0;
         this.shootDelay = 200;
         this.playerDirection = "right";
@@ -101,24 +100,26 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     updatePlayer(){
-        
         this.handleMovement();
         this.handleJump();
-
+        this.checkBounds();
         if(world.shootButton.isDown){
             this.shootProjectile(world.projectileGroup);
         };
     }
-
+    
     loseGame(){
-        //places lose text on top of player
-        var loseText = this.add.text((world.player.x - world.TILEWIDTH),(world.player.y - (world.TILEWIDTH*2)));
+        //moves the lose text to above the player
+        loseText.x = this.x - world.TILEWIDTH;
+        loseText.y = this.y - (world.TILEWIDTH * 2);
+        //displays the lose text  
         loseText.setText("YOU LOSE!");
         //pauses the game
         game.scene.pause("default");
     }
 
     damagePlayer(player, water){
+        world.takeDamageSFX.play();
         water.disableBody(true,true);
         world.health -= 1;
         if(world.health == 0){
@@ -143,5 +144,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                 this.nextProjectileTime = this.scene.time.now + this.shootDelay;
             }
         } 
+    }
+
+    checkBounds(){
+        if(this.y >= config.height - world.TILEWIDTH){
+            this.destroy();
+            this.loseGame();
+        }
     }
 }
