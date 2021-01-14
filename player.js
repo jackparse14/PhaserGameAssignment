@@ -111,7 +111,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     loseGame(){
-        console.log("Game Lost");
+        //places lose text on top of player
+        var loseText = this.add.text((world.player.x - world.TILEWIDTH),(world.player.y - (world.TILEWIDTH*2)));
+        loseText.setText("YOU LOSE!");
+        //pauses the game
         game.scene.pause("default");
     }
 
@@ -124,6 +127,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     collectFire(fire){
+        world.pickupSFX.play();
         fire.disableBody(true,true);
         if (world.currentProjectiles < 3){
             world.currentProjectiles += 1;
@@ -133,6 +137,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     shootProjectile(projectileGroup){
         if(world.currentProjectiles>0){
             if(this.scene.time.now > this.nextProjectileTime){
+                world.shootSFX.play();
                 projectileGroup.add(new Projectile(this.scene,this.x,this.y,"fire"),true);
                 world.currentProjectiles -= 1;
                 this.nextProjectileTime = this.scene.time.now + this.shootDelay;

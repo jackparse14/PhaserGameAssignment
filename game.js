@@ -1,20 +1,29 @@
 let world = {
+    //game
     ROWS: 20,
     COLUMNS: 20,
     TILEWIDTH: 32,
+    mainTileset: null,
+    groundLayer: null,
+    map: null,
+    //controls
     cursors: null,
     jumpButton: null,
     shootButton: null,
-    map: null,
+    //player
     player: null,
-    finishLine: null,
     health: 3,
     currentProjectiles: 1,
+    //groups
     projectileGroup: null,
     waterGroup: null,
     fireGroup: null,
-    mainTileset: null,
-    groundLayer: null
+    //finish
+    finishLine: null,
+    //sound
+    backgroundMusic: null,
+    shootSFX: null,
+    pickupSFX: null
 };
 
 let config = {
@@ -72,6 +81,10 @@ function preload (){
         frameWidth: 32,
         frameHeight: 32
     });
+
+    this.load.audio("backgroundMusic",["./assets/Audio/mainBackgroundAudio.mp3"]);
+    this.load.audio("shootSFX",["./assets/Audio/laser7.mp3"]);
+    this.load.audio("pickupSFX",["./assets/Audio/fireIgnite.mp3"]);
 }
 
 function create (){
@@ -97,7 +110,7 @@ function create (){
     world.shootButton = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
     world.cursors = this.input.keyboard.createCursorKeys();
     
-    //spawn playr
+    //spawn player
     world.player = new Player(this,config.width/4,config.height/2,"player");
 
     //make groups
@@ -114,9 +127,22 @@ function create (){
     world.fireGroup.add(new Fire(this,config.width/1.5,config.height/1.4, "fire"));
     world.fireGroup.add(new Fire(this,config.width/1.3,config.height/1.4, "fire"));
 
+    //add sound
+    world.backgroundMusic = this.sound.add("backgroundMusic");
+    var backgroundMusicConfig = {
+        mute: false,
+        volume: 1,
+        rate: 1,
+        loop: true
+    }
+    world.shootSFX = this.sound.add("shootSFX");
+    world.pickupSFX = this.sound.add("pickupSFX");
+    world.backgroundMusic.play(backgroundMusicConfig);
 
-    text = this.add.text(totalWidth - config.width/2,config.height/2);    
-    timerEvent = this.time.delayedCall(100000, world.player.loseGame, [], this)
+
+    text = this.add.text(totalWidth - config.width/2,config.height/2).setAlpha(0);   
+     
+    timerEvent = this.time.delayedCall(1000, world.player.loseGame, [], this)
 
     this.cameras.main.startFollow(world.player);
 
@@ -183,8 +209,13 @@ function buildWorld(scene, world) {
 
 function updateTimer(){
     var progress = timerEvent.getProgress().toString();
-    var antiprogress = 1 - progress;    
-    text.setText("You Win - Score: " + antiprogress*100);
+    var antiprogress = 1 - progress;
+    var score = Phaser.Math.FloorTo(antiprogress * 100);
+    text.setText("YOU WIN! - Score: " + score);
+}
+
+function calcScore(){
+
 }
 
 function destroyGameObject(){

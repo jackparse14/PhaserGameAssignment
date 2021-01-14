@@ -6,7 +6,9 @@ class Finish extends Phaser.Physics.Arcade.Sprite{
     }
     
     winGame(){
-        console.log("Game Won");
+        //make the win text visible
+        text.setAlpha(1);
+        //pause the game
         game.scene.pause("default");
     }
 }
