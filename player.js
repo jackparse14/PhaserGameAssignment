@@ -5,7 +5,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         scene.physics.add.existing(this);
         
         scene.anims.create({
-            key: "player-idle",
+            key: "idle-right",
             frames: scene.anims.generateFrameNumbers(texture,{
                 start: 0,
                 end: 7,                         
@@ -13,35 +13,46 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             frameRate: 10,
             repeat: -1  
         });
-        this.anims.load("player-idle");
+        this.anims.load("idle-right");
 
         scene.anims.create({
-            key: "moveRight",
+            key: "idle-left",
             frames: scene.anims.generateFrameNumbers(texture,{
                 start: 8,
-                end: 8,
+                end: 15,                         
             }),
             frameRate: 10,
-            repeat: -1
+            repeat: -1  
         });
-        this.anims.load("moveRight");
+        this.anims.load("idle-left");
 
         scene.anims.create({
-            key: "moveLeft",
+            key: "move-right",
             frames: scene.anims.generateFrameNumbers(texture,{
-                start: 9,
-                end: 9,
+                start: 16,
+                end: 16,
             }),
             frameRate: 10,
             repeat: -1
         });
-        this.anims.load("moveLeft");
+        this.anims.load("move-right");
+
+        scene.anims.create({
+            key: "move-left",
+            frames: scene.anims.generateFrameNumbers(texture,{
+                start: 17,
+                end: 17,
+            }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.anims.load("move-left");
         
         scene.anims.create({
             key: "jump",
             frames: scene.anims.generateFrameNumbers(texture,{
-                start: 10,
-                end: 15,
+                start: 18,
+                end: 23,
             }),
             frameRate: 10,
             repeat: -1
@@ -55,6 +66,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
         this.nextProjectileTime = 0;
         this.shootDelay = 200;
+        this.playerDirection = "right";
         scene.add.existing(this);
     }
 
@@ -63,14 +75,18 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     handleMovement(){ 
         const touchingGround = this.body.onFloor() || this.body.touching.down;
         if(world.cursors.right.isDown) {
-            this.anims.play("moveRight", true);
             this.setVelocityX(moveSpeed);
+            this.playerDirection = "right"; 
+            this.anims.play("move-right", true);
+            
         } else if(world.cursors.left.isDown) {
-            this.anims.play("moveLeft", true);
             this.setVelocityX(-moveSpeed);
+            this.playerDirection = "left";
+            this.anims.play("move-left", true);
+            
         } else {
-            this.anims.play("player-idle", true);
-            this.setVelocity(0) ;
+            this.setVelocity(0)
+            this.anims.play("idle-" + this.playerDirection, true);
         }
     }
     
@@ -117,9 +133,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     shootProjectile(projectileGroup){
         if(world.currentProjectiles>0){
             if(this.scene.time.now > this.nextProjectileTime){
-                projectileGroup.add(new Projectile(game.scene,this.x,this.y,"fire"));
+                projectileGroup.add(new Projectile(this.scene,this.x,this.y,"fire"),true);
                 world.currentProjectiles -= 1;
-                this.nextProjectileTime = game.scene.time.now + this.shootDelay;
+                this.nextProjectileTime = this.scene.time.now + this.shootDelay;
             }
         } 
     }
