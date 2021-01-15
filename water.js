@@ -12,7 +12,7 @@ class Water extends Phaser.Physics.Arcade.Sprite{
             repeat: -1
         });
         this.anims.load("water-idle");
-
+        this.waterPoints = 1000;
         scene.add.existing(this);
     }
 

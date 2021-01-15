@@ -98,7 +98,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         }
         if(touchingGround){jumpCount = 0};
     }
-
+    
     updatePlayer(){
         this.handleMovement();
         this.handleJump();
@@ -115,13 +115,15 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         //displays the lose text  
         loseText.setText("YOU LOSE!");
         //pauses the game
-        game.scene.pause("default");
+        game.scene.pause("game");
+        game.scene.start("lose");
     }
 
     damagePlayer(player, water){
         world.takeDamageSFX.play();
         water.disableBody(true,true);
         world.health -= 1;
+        livesInfo.setText("Lives: " + world.health);
         if(world.health == 0){
             player.loseGame();
         } 
@@ -129,10 +131,20 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     collectFire(fire){
         world.pickupSFX.play();
-        fire.disableBody(true,true);
+        fire.destroy();
         if (world.currentProjectiles < 3){
             world.currentProjectiles += 1;
         } 
+        bulletInfo.setText("Fire Bullets: " + world.currentProjectiles);
+    }
+
+    collectRedFlame(redflame){
+        world.pickupSFX.play();
+        pointsText.x = redflame.x - world.TILEWIDTH;
+        pointsText.y = redflame.y - (world.TILEWIDTH * 2);
+        pointsText.setText("+" + redflame.redFlamePoints);
+        redflame.destroy();
+        world.collectScore += 500;
     }
     
     shootProjectile(projectileGroup){
@@ -141,6 +153,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                 world.shootSFX.play();
                 projectileGroup.add(new Projectile(this.scene,this.x,this.y,"fire"),true);
                 world.currentProjectiles -= 1;
+                bulletInfo.setText("Fire Bullets: " + world.currentProjectiles);
                 this.nextProjectileTime = this.scene.time.now + this.shootDelay;
             }
         } 

@@ -1,9 +1,9 @@
-class Fire extends Phaser.Physics.Arcade.Sprite{
+class RedFlame extends Phaser.Physics.Arcade.Sprite{
     constructor(scene,x,y,texture){
-        super(scene, x, y, texture);  
+        super(scene,x,y,texture);
         scene.physics.add.existing(this);
         scene.anims.create({
-            key: "fire-idle",
+            key: "redflame-idle",
             frames: scene.anims.generateFrameNumbers(texture,{
                 start: 0,
                 end: 7,
@@ -11,13 +11,11 @@ class Fire extends Phaser.Physics.Arcade.Sprite{
             frameRate: 10,
             repeat: -1
         });
-        this.anims.load("fire-idle");
-
+        this.anims.load("redflame-idle");
+        this.redFlamePoints = 500;
         scene.add.existing(this);
     }
-
-    updateFire(){
-        this.anims.play("fire-idle", true);
-        this.angle += 1;
+    updateRedFlame(){
+        this.anims.play("redflame-idle", true);
     }
 }

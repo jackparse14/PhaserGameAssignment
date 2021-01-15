@@ -7,8 +7,8 @@ class Finish extends Phaser.Physics.Arcade.Sprite{
     
     winGame(){
         //Display Win text
-        winText.setText("YOU WIN! - Score: " + (world.timeScore + world.killScore)).setAlpha(1);
+        winText.setText("YOU WIN! - Score: " + (world.timeScore + world.killScore + world.collectScore)).setAlpha(1);
         //pause the game
-        game.scene.pause("default");
+        game.scene.pause("game");
     }
 }
