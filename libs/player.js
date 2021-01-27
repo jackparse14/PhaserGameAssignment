@@ -32,7 +32,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                 start: 16,
                 end: 16,
             }),
-            frameRate: 10,
+            frameRate: 1,
             repeat: -1
         });
         this.anims.load("move-right");
@@ -43,21 +43,32 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                 start: 17,
                 end: 17,
             }),
-            frameRate: 10,
+            frameRate: 1,
             repeat: -1
         });
         this.anims.load("move-left");
         
         scene.anims.create({
-            key: "jump",
+            key: "jump-right",
             frames: scene.anims.generateFrameNumbers(texture,{
                 start: 18,
-                end: 23,
+                end: 28,
             }),
-            frameRate: 10,
+            frameRate: 24,
+            repeat:-1
+        });
+        this.anims.load("jump-right");
+
+        scene.anims.create({
+            key: "jump-left",
+            frames: scene.anims.generateFrameNumbers(texture,{
+                start: 29,
+                end: 39,
+            }),
+            frameRate: 16,
             repeat: -1
         });
-        this.anims.load("jump");
+        this.anims.load("jump-left");
 
         //  allows player to collide with world boundaries
         this.setCollideWorldBounds(true);
@@ -68,6 +79,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.shootDelay = 200;
         //  default player direction is right
         this.playerDirection = "right";
+        this.moveSpeed = 250;
         //  adds to scene
         scene.add.existing(this);
     }
@@ -80,15 +92,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
         //  player controls - right and left arrows to move player
         if(world.cursors.right.isDown) {
-            this.body.setVelocityX(moveSpeed);
+            this.body.setVelocityX(this.moveSpeed);
             this.playerDirection = "right"; 
-            this.anims.play("move-right", true);
-            
+            if(touchingGround){this.anims.play("move-right", true);};
         } else if(world.cursors.left.isDown) {
-            this.body.setVelocityX(-moveSpeed);
+            this.body.setVelocityX(-this.moveSpeed);
             this.playerDirection = "left";
-            this.anims.play("move-left", true);
-            
+            if(touchingGround){this.anims.play("move-left", true);};
         } else {
             //  when not pressing left or right x velocity is 0
             this.setVelocityX(0);
@@ -104,7 +114,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         const touchingGround = this.body.onFloor() || this.body.touching.down;
         //  Allows for double jump after touching the ground
         if(Phaser.Input.Keyboard.JustDown(world.jumpButton) && (touchingGround || jumpCount < 1 )){
-            this.anims.play("jump", true);
+            this.anims.play("jump-" + this.playerDirection, false);
             this.setVelocityY(-jumpSpeed);
             jumpCount++;
         }
@@ -153,12 +163,16 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     collectFire(fire){
         //  play pickup sound
         world.pickupSFX.play();
+        pickupText.x = fire.x - world.TILEWIDTH;
+        pickupText.y = fire.y - (world.TILEWIDTH * 2);
+        pickupText.setText("+1 Fire Bullet")
         fire.destroy();
         //  makes it so the player can only have 3 shots at a time
         if (world.currentProjectiles < 3){
             world.currentProjectiles += 1;
         } 
         //  update ui
+        
         bulletInfo.setText("Fire Bullets: " + world.currentProjectiles);
     }
 
@@ -166,10 +180,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         //  play pickup sound
         world.pickupSFX.play();
         //  workout where to display points text
-        pointsText.x = redflame.x - world.TILEWIDTH;
-        pointsText.y = redflame.y - (world.TILEWIDTH * 2);
+        pickupText.x = redflame.x - world.TILEWIDTH;
+        pickupText.y = redflame.y - (world.TILEWIDTH * 2);
         //  display points text
-        pointsText.setText("+" + redflame.redFlamePoints);
+        pickupText.setText("+" + redflame.redFlamePoints);
         redflame.destroy();
         //  add to collect score 
         world.collectScore += 500;
