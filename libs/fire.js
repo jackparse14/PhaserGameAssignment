@@ -22,7 +22,5 @@ class Fire extends Phaser.Physics.Arcade.Sprite{
     updateFire(){
         //  play fire idle animation
         this.anims.play("fire-idle", true);
-        //  make sprite rotate
-        this.angle += 1;
     }
 }

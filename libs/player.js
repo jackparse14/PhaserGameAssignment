@@ -71,7 +71,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.anims.load("jump-left");
 
         //  allows player to collide with world boundaries
-        this.setCollideWorldBounds(true);
+        this.setCollideWorldBounds(true); 
         //  when player lands he bounces a tiny amount
         this.setBounce(0.2);
         //  shooting variables
@@ -88,22 +88,22 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     
     handleMovement(){ 
         //  const to see if player is touching ground
-        const touchingGround = this.body.onFloor() || this.body.touching.down;
+        const touchingFloor = this.body.onFloor() || this.body.touching.down;
 
         //  player controls - right and left arrows to move player
         if(world.cursors.right.isDown) {
             this.body.setVelocityX(this.moveSpeed);
             this.playerDirection = "right"; 
-            if(touchingGround){this.anims.play("move-right", true);};
+            if(touchingFloor){this.anims.play("move-right", true);};
         } else if(world.cursors.left.isDown) {
             this.body.setVelocityX(-this.moveSpeed);
             this.playerDirection = "left";
-            if(touchingGround){this.anims.play("move-left", true);};
+            if(touchingFloor){this.anims.play("move-left", true);};
         } else {
             //  when not pressing left or right x velocity is 0
             this.setVelocityX(0);
             //  if player is touching ground play idle animations
-            if(touchingGround){
+            if(touchingFloor){
                 this.anims.play("idle-" + this.playerDirection, true);  
             }
         }
@@ -111,15 +111,15 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     
     handleJump(){
         //  const to see if player is touching ground
-        const touchingGround = this.body.onFloor() || this.body.touching.down;
+        const touchingFloor = this.body.onFloor() || this.body.touching.down;
         //  Allows for double jump after touching the ground
-        if(Phaser.Input.Keyboard.JustDown(world.jumpButton) && (touchingGround || jumpCount < 1 )){
+        if(Phaser.Input.Keyboard.JustDown(world.jumpButton) && (touchingFloor || jumpCount < 1 )){
             this.anims.play("jump-" + this.playerDirection, false);
             this.setVelocityY(-jumpSpeed);
             jumpCount++;
         }
         //  when the player touches ground reset jumpcount
-        if(touchingGround){jumpCount = 0};
+        if(touchingFloor){jumpCount = 0};
     }
     
     updatePlayer(){
@@ -136,11 +136,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
     
     loseGame(){
-        //  moves the lose text to above the player
-        loseText.x = this.x - world.TILEWIDTH;
-        loseText.y = this.y - (world.TILEWIDTH * 2);
-        //  displays the lose text  
-        loseText.setText("YOU LOSE!");
         //  pauses the game
         game.scene.pause("game");
         //  starts the lose scene
@@ -216,4 +211,4 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             this.loseGame();
         }
     }
-}
+}   

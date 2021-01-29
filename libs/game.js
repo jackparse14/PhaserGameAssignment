@@ -92,9 +92,9 @@ class GameScene extends Phaser.Scene{
 
     //  CREATE ******************************************************************************************************************************
     create (){
+        //  runs all the create functions
         this.createBounds();
         this.createBackground();
-        //  runs buildworld
         this.buildWorld(this,world);
         this.createStartFinish();
         this.createControls();
@@ -117,12 +117,12 @@ class GameScene extends Phaser.Scene{
         this.add.image(config.width/2, config.height/2, "sky")
             .setScrollFactor(0);
         //  create parallax background
-        this.allignBackground(this, "mountains", 0.25);
-        this.allignBackground(this, "fields", 0.5);
-        this.allignBackground(this, "floor", 1);
+        this.alignBackground(this, "mountains", 0.25);
+        this.alignBackground(this, "fields", 0.5);
+        this.alignBackground(this, "floor", 1);
     }
     // allignBackground code is from Ourcade on Youtube
-    allignBackground(scene, texture, scrollFactor){
+    alignBackground(scene, texture, scrollFactor){
         //  creates image width variable
         const imgWidth = scene.textures.get(texture).getSourceImage().width;
         //  count is how many images can fit within the total width of the game
@@ -206,7 +206,6 @@ class GameScene extends Phaser.Scene{
     createText(){
         //  adds text to the scene
         pickupText = this.add.text();
-        loseText = this.add.text();
         winText = this.add.text(totalWidth - config.width/2,config.height/2).setAlpha(0);  
     }
     showUI(){
@@ -238,7 +237,6 @@ class GameScene extends Phaser.Scene{
         this.physics.add.overlap(world.player, world.finishLine, world.finishLine.winGame);
         //  adds colliders between the projectiles and waters and the groundlayer 
         this.physics.add.collider(world.projectileGroup, world.waterGroup, this.collideProjectileWater);
-        this.physics.add.collider(world.projectileGroup, world.groundLayer, this.collideProjectileGround);
     }
     
     collideProjectileWater(projectile,water){
@@ -252,10 +250,6 @@ class GameScene extends Phaser.Scene{
         pickupText.setText("+" + water.waterPoints);
         //  adds 1000 to the kill score
         world.killScore += 1000;
-    }
-    collideProjectileGround(projectile,groundLayer){
-        //  destroy overlapping projectile
-        projectile.destroy();
     }
     //  UPDATE ******************************************************************************************************************************
     update(){
@@ -315,7 +309,6 @@ const totalWidth = config.width * 10;
 
 var timerEvent;
 var winText;
-var loseText;
 var pickupText;
 var livesInfo;
 var bulletInfo;
